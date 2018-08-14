@@ -26,7 +26,7 @@
     <artifactId>axon-spring-boot-autoconfigure</artifactId>
     <name>Axon Framework Spring Boot Support</name>
     <properties>
-        <spring-cloud.version>2.0.0.M6</spring-cloud.version>
+        <spring-cloud.version>2.0.1.RELEASE</spring-cloud.version>
     </properties>
 
     <dependencies>
