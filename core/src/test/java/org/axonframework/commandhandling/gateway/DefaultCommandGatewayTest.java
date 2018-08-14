@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2014. Axon Framework
+ * Copyright (c) 2010-2018. Axon Framework
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Allard Buijze
+ * @author Nakul Mishra
  */
 public class DefaultCommandGatewayTest {
 
@@ -53,7 +54,7 @@ public class DefaultCommandGatewayTest {
     private MessageDispatchInterceptor mockCommandMessageTransformer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockCommandBus = mock(CommandBus.class);
         mockRetryScheduler = mock(RetryScheduler.class);
         mockCommandMessageTransformer = mock(MessageDispatchInterceptor.class);
@@ -236,7 +237,7 @@ public class DefaultCommandGatewayTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCorrelationDataIsAttachedToCommandAsObject() throws Exception {
+    public void testCorrelationDataIsAttachedToCommandAsObject() {
         UnitOfWork<CommandMessage<?>> unitOfWork = DefaultUnitOfWork.startAndGet(null);
         unitOfWork.registerCorrelationDataProvider(message -> Collections.singletonMap("correlationId", "test"));
         testSubject.send("Hello");
@@ -248,7 +249,7 @@ public class DefaultCommandGatewayTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCorrelationDataIsAttachedToCommandAsMessage() throws Exception {
+    public void testCorrelationDataIsAttachedToCommandAsMessage() {
         final Map<String, String> data = new HashMap<>();
         data.put("correlationId", "test");
         data.put("header", "someValue");
@@ -265,7 +266,7 @@ public class DefaultCommandGatewayTest {
     private static class RescheduleCommand implements Answer<Boolean> {
 
         @Override
-        public Boolean answer(InvocationOnMock invocation) throws Exception {
+        public Boolean answer(InvocationOnMock invocation) {
             ((Runnable) invocation.getArguments()[3]).run();
             return true;
         }

@@ -46,7 +46,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -190,8 +189,6 @@ public class SpringCloudHttpBackupCommandRouterTest {
         when(nonAxonInstance.getServiceId()).thenReturn(SERVICE_INSTANCE_ID);
         when(nonAxonInstance.getUri()).thenReturn(URI.create("http://non-axon"));
 
-        ResponseEntity<MessageRoutingInformation> responseEntity = mock(ResponseEntity.class);
-        when(responseEntity.hasBody()).thenReturn(false);
         URI testRemoteUri = URI.create("http://non-axon/message-routing-information");
         when(restTemplate.exchange(
                 eq(testRemoteUri), eq(HttpMethod.GET), eq(HttpEntity.EMPTY), eq(MessageRoutingInformation.class)

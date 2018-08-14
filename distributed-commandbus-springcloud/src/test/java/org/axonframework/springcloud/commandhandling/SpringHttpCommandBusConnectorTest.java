@@ -69,7 +69,7 @@ public class SpringHttpCommandBusConnectorTest {
     @Before
     public void setUp() throws Exception {
         expectedUri = new URI(ENDPOINT.getScheme(), ENDPOINT.getUserInfo(), ENDPOINT.getHost(),
-                ENDPOINT.getPort(), ENDPOINT.getPath() + "/spring-command-bus-connector/command", null, null);
+                              ENDPOINT.getPort(), ENDPOINT.getPath() + "/spring-command-bus-connector/command", null, null);
 
         when(serializedMetaData.getContentType()).thenReturn(byte[].class);
         when(serializedMetaData.getData()).thenReturn(SERIALIZED_COMMAND_METADATA);
@@ -98,14 +98,14 @@ public class SpringHttpCommandBusConnectorTest {
         when(serializer.serialize(COMMAND_RESULT, byte[].class)).thenReturn(serializedResult);
         when(serializer.serialize(COMMAND_ERROR, byte[].class)).thenReturn(serializedError);
         when(serializer.deserialize(new SimpleSerializedObject<>(SERIALIZED_COMMAND_PAYLOAD, byte[].class,
-                String.class.getName(), null))).thenReturn(COMMAND_MESSAGE.getPayload());
+                                                                 String.class.getName(), null))).thenReturn(COMMAND_MESSAGE.getPayload());
         when(serializer.deserialize(new SerializedMetaData<>(SERIALIZED_COMMAND_METADATA, byte[].class)))
                 .thenReturn(COMMAND_MESSAGE.getMetaData());
         when(serializer.getConverter()).thenReturn(new ChainingConverter());
     }
 
     @Test
-    public void testSendWithoutCallbackSucceeds() throws Exception {
+    public void testSendWithoutCallbackSucceeds() {
         HttpEntity<SpringHttpDispatchMessage> expectedHttpEntity = new HttpEntity<>(buildDispatchMessage(false));
 
         testSubject.send(DESTINATION, COMMAND_MESSAGE);
@@ -113,17 +113,17 @@ public class SpringHttpCommandBusConnectorTest {
         verify(serializer).serialize(COMMAND_MESSAGE.getMetaData(), byte[].class);
         verify(serializer).serialize(COMMAND_MESSAGE.getPayload(), byte[].class);
         verify(restTemplate).exchange(eq(expectedUri), eq(HttpMethod.POST),
-                eq(expectedHttpEntity), argThat(new ParameterizedTypeReferenceMatcher<>()));
+                                      eq(expectedHttpEntity), argThat(new ParameterizedTypeReferenceMatcher<>()));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSendWithoutCallbackThrowsExceptionForMissingDestinationURI() throws Exception {
+    public void testSendWithoutCallbackThrowsExceptionForMissingDestinationURI() {
         SimpleMember<String> faultyDestination = new SimpleMember<>(MEMBER_NAME, null, false, null);
         testSubject.send(faultyDestination, COMMAND_MESSAGE);
     }
 
     @Test
-    public void testSendWithCallbackSucceedsAndReturnsSucceeded() throws Exception {
+    public void testSendWithCallbackSucceedsAndReturnsSucceeded() {
         SimpleSerializedObject<byte[]> expectedSerializedResult =
                 new SimpleSerializedObject<>(SERIALIZED_RESULT_DATA, byte[].class, String.class.getName(), null);
         when(serializer.deserialize(expectedSerializedResult)).thenReturn(COMMAND_RESULT);
@@ -134,20 +134,20 @@ public class SpringHttpCommandBusConnectorTest {
         ResponseEntity<SpringHttpReplyMessage<String>> testResponseEntity =
                 new ResponseEntity<>(testReplyMessage, HttpStatus.OK);
         when(restTemplate.exchange(eq(expectedUri), eq(HttpMethod.POST), eq(expectedHttpEntity),
-                argThat(new ParameterizedTypeReferenceMatcher<String>()))).thenReturn(testResponseEntity);
+                                   argThat(new ParameterizedTypeReferenceMatcher<String>()))).thenReturn(testResponseEntity);
 
         testSubject.send(DESTINATION, COMMAND_MESSAGE, commandCallback);
 
         verify(serializer).serialize(COMMAND_MESSAGE.getMetaData(), byte[].class);
         verify(serializer).serialize(COMMAND_MESSAGE.getPayload(), byte[].class);
         verify(restTemplate).exchange(eq(expectedUri), eq(HttpMethod.POST), eq(expectedHttpEntity),
-                argThat(new ParameterizedTypeReferenceMatcher<>()));
+                                      argThat(new ParameterizedTypeReferenceMatcher<>()));
         verify(serializer).deserialize(expectedSerializedResult);
         verify(commandCallback).onSuccess(COMMAND_MESSAGE, COMMAND_RESULT);
     }
 
     @Test
-    public void testSendWithCallbackSucceedsAndReturnsFailed() throws Exception {
+    public void testSendWithCallbackSucceedsAndReturnsFailed() {
         SimpleSerializedObject<byte[]> expectedSerializedError =
                 new SimpleSerializedObject<>(SERIALIZED_ERROR_DATA, byte[].class, Exception.class.getName(), null);
         when(serializer.deserialize(expectedSerializedError)).thenReturn(COMMAND_ERROR);
@@ -158,26 +158,26 @@ public class SpringHttpCommandBusConnectorTest {
         ResponseEntity<SpringHttpReplyMessage<String>> testResponseEntity =
                 new ResponseEntity<>(testReplyMessage, HttpStatus.OK);
         when(restTemplate.exchange(eq(expectedUri), eq(HttpMethod.POST), eq(expectedHttpEntity),
-                argThat(new ParameterizedTypeReferenceMatcher<String>()))).thenReturn(testResponseEntity);
+                                   argThat(new ParameterizedTypeReferenceMatcher<String>()))).thenReturn(testResponseEntity);
 
         testSubject.send(DESTINATION, COMMAND_MESSAGE, commandCallback);
 
         verify(serializer).serialize(COMMAND_MESSAGE.getMetaData(), byte[].class);
         verify(serializer).serialize(COMMAND_MESSAGE.getPayload(), byte[].class);
         verify(restTemplate).exchange(eq(expectedUri), eq(HttpMethod.POST), eq(expectedHttpEntity),
-                argThat(new ParameterizedTypeReferenceMatcher<>()));
+                                      argThat(new ParameterizedTypeReferenceMatcher<>()));
         verify(serializer).deserialize(expectedSerializedError);
         verify(commandCallback).onFailure(COMMAND_MESSAGE, COMMAND_ERROR);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSendWithCallbackThrowsExceptionForMissingDestinationURI() throws Exception {
+    public void testSendWithCallbackThrowsExceptionForMissingDestinationURI() {
         SimpleMember<String> faultyDestination = new SimpleMember<>(MEMBER_NAME, null, false, null);
         testSubject.send(faultyDestination, COMMAND_MESSAGE, new NoOpCallback());
     }
 
     @Test
-    public void testSubscribeSubscribesCommandHandlerForCommandNameToLocalCommandBus() throws Exception {
+    public void testSubscribeSubscribesCommandHandlerForCommandNameToLocalCommandBus() {
         String expectedCommandName = "commandName";
 
         testSubject.subscribe(expectedCommandName, messageHandler);
@@ -266,7 +266,7 @@ public class SpringHttpCommandBusConnectorTest {
     }
 
     @Test
-    public void testSendWithCallbackToLocalMember() throws Exception {
+    public void testSendWithCallbackToLocalMember() {
         SimpleMember<String> localDestination = new SimpleMember<>(MEMBER_NAME, null, true, null);
         testSubject.send(localDestination, COMMAND_MESSAGE, new NoOpCallback());
 
@@ -275,7 +275,7 @@ public class SpringHttpCommandBusConnectorTest {
     }
 
     @Test
-    public void testSendWithoutCallbackToLocalMember() throws Exception {
+    public void testSendWithoutCallbackToLocalMember() {
         SimpleMember<String> localDestination = new SimpleMember<>(MEMBER_NAME, null, true, null);
         testSubject.send(localDestination, COMMAND_MESSAGE);
 

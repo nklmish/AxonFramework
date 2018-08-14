@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2016. Axon Framework
+ * Copyright (c) 2010-2018. Axon Framework
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.axonframework.spring.eventsourcing;
 
+import org.axonframework.commandhandling.model.RepositoryProvider;
 import org.axonframework.eventsourcing.*;
 import org.axonframework.eventsourcing.eventstore.DomainEventStream;
 import org.axonframework.eventsourcing.eventstore.EventStore;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Allard Buijze
+ * @author Nakul Mishra
  */
 public class SpringAggregateSnapshotterFactoryBeanTest {
 
@@ -43,13 +45,15 @@ public class SpringAggregateSnapshotterFactoryBeanTest {
     private PlatformTransactionManager mockTransactionManager;
     private String aggregateIdentifier;
     private EventStore mockEventStore;
+    private RepositoryProvider mockRepositoryProvider;
     private ApplicationContext mockApplicationContext;
     private Executor executor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockApplicationContext = mock(ApplicationContext.class);
         mockEventStore = mock(EventStore.class);
+        mockRepositoryProvider = mock(RepositoryProvider.class);
         executor = spy(new MockExecutor());
 
         testSubject = new SpringAggregateSnapshotterFactoryBean();
@@ -65,6 +69,7 @@ public class SpringAggregateSnapshotterFactoryBeanTest {
                                              }
                                          }));
         testSubject.setEventStore(mockEventStore);
+        testSubject.setRepositoryProvider(mockRepositoryProvider);
         mockTransactionManager = mock(PlatformTransactionManager.class);
         aggregateIdentifier = UUID.randomUUID().toString();
 
@@ -92,7 +97,7 @@ public class SpringAggregateSnapshotterFactoryBeanTest {
         when(mockApplicationContext.getBean(EventStore.class)).thenReturn(mockEventStore);
         when(mockApplicationContext.getBeansOfType(EventSourcingRepository.class)).thenReturn(
                 Collections.singletonMap("myRepository",
-                                         new EventSourcingRepository<>(StubAggregate.class, mockEventStore))
+                                         new EventSourcingRepository<>(StubAggregate.class, mockEventStore, mockRepositoryProvider))
         );
         testSnapshotCreated_NoTransaction();
     }

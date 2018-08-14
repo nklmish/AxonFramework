@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2016. Axon Framework
+ * Copyright (c) 2010-2018. Axon Framework
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Allard Buijze
+ * @author Nakul Mishra
  */
 public class AbstractSnapshotterTest {
 
@@ -73,8 +74,7 @@ public class AbstractSnapshotterTest {
     }
 
     @Test
-    public void testScheduleSnapshot_ConcurrencyExceptionIsSilenced()
-            throws NoSuchFieldException, IllegalAccessException {
+    public void testScheduleSnapshot_ConcurrencyExceptionIsSilenced() {
         final String aggregateIdentifier = "aggregateIdentifier";
         doNothing()
                 .doThrow(new ConcurrencyException("Mock"))
